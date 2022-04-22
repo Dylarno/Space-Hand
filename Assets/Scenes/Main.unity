@@ -213,6 +213,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 265314786088152264, guid: db34903605be1164498df66019f3dc16, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 399359820233368725, guid: db34903605be1164498df66019f3dc16, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -220,6 +224,26 @@ PrefabInstance:
     - target: {fileID: 2875862244607344243, guid: db34903605be1164498df66019f3dc16, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7716917272813580658, guid: db34903605be1164498df66019f3dc16, type: 3}
+      propertyPath: m_Name
+      value: Dash VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 7716917272813580658, guid: db34903605be1164498df66019f3dc16, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7716917272813580660, guid: db34903605be1164498df66019f3dc16, type: 3}
+      propertyPath: m_FlipX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7716917272813580660, guid: db34903605be1164498df66019f3dc16, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7716917272813580661, guid: db34903605be1164498df66019f3dc16, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db34903605be1164498df66019f3dc16, type: 3}

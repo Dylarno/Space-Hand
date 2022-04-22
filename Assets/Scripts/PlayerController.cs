@@ -7,11 +7,16 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
 
+    private static float maxDashCharge = 1.5f;
+
     private Vector2 moveInput;
     private Rigidbody2D rb;
 
-    private Animator animator;
     private Transform sprite;
+    private SpriteRenderer dashChargeSprite;
+    private Animator animator;
+
+    [SerializeField] private GameObject dashTrail;
 
     private bool alternatePunch;
 
@@ -24,6 +29,8 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sprite = transform.GetChild(0);
+        dashChargeSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
+
         alternatePunch = false;
         chargingDash = false;
     }
@@ -41,21 +48,21 @@ public class PlayerController : MonoBehaviour
         {
             var chargingTime = Time.time - startedCharge;
 
-            if (chargingTime > 0f && chargingTime < 1f)
-                dashChargeFactor = 2.5f;
+            dashChargeFactor = Mathf.Clamp(chargingTime, maxDashCharge - 1.0f, maxDashCharge);
+            dashChargeFactor *= 2.5f;
+            print(dashChargeFactor);
 
-            else if(chargingTime > 1f && chargingTime < 2f)
-                dashChargeFactor = 5f;
+            var spriteAlpha = Mathf.Clamp((Map(chargingTime, 0.0f, maxDashCharge, 0.0f, 1.0f)), 0.0f, maxDashCharge);
+            dashChargeSprite.color = new Color(1f, 1f, 1f, spriteAlpha);
 
-            else if (chargingTime > 3f)
-                dashChargeFactor = 7.5f;
-
-
+            animator.SetBool("Charging", true);
         }
 
         else
         {
+            animator.SetBool("Charging", false);
             animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
+            dashChargeSprite.color = new Color(1f, 1f, 1f, 0f);
         } 
     }
 
@@ -104,6 +111,22 @@ public class PlayerController : MonoBehaviour
         {
             chargingDash = false;
 
+            // Center Sprite on Character:
+            var dashTrailPosition = new Vector2(transform.position.x, transform.position.y + 0.5f);
+
+            // Map the movement input to Euler angles:
+            var dashTrailRotation = Map(Mathf.Round(moveInput.y * 2f) / 2f, -1f, 1f, -90f, 90f);
+
+            // Evaluate for diagonal dashes in the negative x direction and adjust their rotation:
+            dashTrailRotation = (moveInput.x < 0f && moveInput.y != 0f) ? dashTrailRotation * Mathf.Sign(moveInput.x) : dashTrailRotation;
+
+            var spawnedTrail = Instantiate(dashTrail, dashTrailPosition, Quaternion.Euler(0f, 0f, dashTrailRotation));
+
+            // Set the sprite's length and flip the sprite based on movement input:
+            spawnedTrail.transform.localScale = new Vector3((dashChargeFactor - 0.5f) * Mathf.Sign(moveInput.x), 1f, 2f);
+
+            Destroy(spawnedTrail, 1.0f);
+
             var dashLocationX = rb.position.x + (moveInput.x * dashChargeFactor);
             var dashLocationY = rb.position.y + (moveInput.y * dashChargeFactor);
             var dashLocation = new Vector2(dashLocationX, dashLocationY);
@@ -117,5 +140,20 @@ public class PlayerController : MonoBehaviour
 
         if (direction >= 0.5f || direction <= 0.5f)
             sprite.localScale = new Vector2(1 * Mathf.Sign(direction), 1);
+    }
+
+    public float Map(float from, float fromMin, float fromMax, float toMin, float toMax)
+    {
+        var fromAbs = from - fromMin;
+        var fromMaxAbs = fromMax - fromMin;
+
+        var normal = fromAbs / fromMaxAbs;
+
+        var toMaxAbs = toMax - toMin;
+        var toAbs = toMaxAbs * normal;
+
+        var to = toAbs + toMin;
+
+        return to;
     }
 }
