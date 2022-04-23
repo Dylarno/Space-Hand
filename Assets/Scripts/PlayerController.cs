@@ -69,8 +69,6 @@ public class PlayerController : MonoBehaviour
     private void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
-
-        if (chargingDash) return;
         FlipSprite(moveInput.x);
     }
 
