@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 moveInput;
     private Rigidbody2D rb;
+    private bool flippedSprite;
 
     private Transform sprite;
     private SpriteRenderer dashChargeSprite;
@@ -33,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
         alternatePunch = false;
         chargingDash = false;
+        flippedSprite = false;
     }
 
     private void FixedUpdate()
@@ -92,7 +94,18 @@ public class PlayerController : MonoBehaviour
         {
             animator.Play("Punch Right");
             alternatePunch = true;
-        } 
+        }
+
+        Vector2 pos = new Vector2(transform.position.x, transform.position.y + 0.5f);
+        Vector2 dir = !flippedSprite ? Vector2.right : Vector2.left;
+        RaycastHit2D hit = Physics2D.Raycast(pos, dir);
+
+        if (hit.collider == null) return;
+
+        if (hit.collider.CompareTag("Asteroid") && Vector2.Distance(transform.position, hit.collider.transform.position) < 1f)
+        {
+            Destroy(hit.collider.gameObject);
+        }
     }
 
     private void OnDash(InputValue value)
@@ -138,6 +151,8 @@ public class PlayerController : MonoBehaviour
 
         if (direction >= 0.5f || direction <= 0.5f)
             sprite.localScale = new Vector2(1 * Mathf.Sign(direction), 1);
+
+        flippedSprite = sprite.localScale.x == -1 ? true : false;
     }
 
     public float Map(float from, float fromMin, float fromMax, float toMin, float toMax)
